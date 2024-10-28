@@ -1,0 +1,93 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "users": {
+      "$uid": {
+        ".read": "$uid === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin'",
+        ".write": "$uid === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin'",
+        ".validate": "newData.hasChildren(['email', 'role', 'createdAt', 'updatedAt'])",
+        "role": {
+          ".validate": "newData.val() === 'user' || newData.val() === 'admin'"
+        },
+        "email": {
+          ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$/)"
+        }
+      }
+    },
+    "experiments": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$experimentId": {
+        ".validate": "newData.hasChildren(['name', 'type', 'status', 'description', 'createdAt', 'updatedAt'])",
+        "createdBy": {
+          ".validate": "auth != null && newData.val() === auth.uid"
+        },
+        "updatedBy": {
+          ".validate": "auth != null && newData.val() === auth.uid"
+        }
+      }
+    },
+    "recipes": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      "$recipeId": {
+        ".validate": "newData.hasChildren(['name', 'spiritType', 'description', 'createdAt', 'updatedAt'])",
+        "createdBy": {
+          ".validate": "auth != null && newData.val() === auth.uid"
+        },
+        "updatedBy": {
+          ".validate": "auth != null && newData.val() === auth.uid"
+        }
+      }
+    },
+    "inventory": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      "$itemId": {
+        ".validate": "newData.hasChildren(['name', 'quantity', 'category', 'createdAt', 'updatedAt'])",
+        "quantity": {
+          ".validate": "newData.isNumber() && newData.val() >= 0"
+        }
+      }
+    },
+    "production": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      "batches": {
+        "$batchId": {
+          ".validate": "newData.hasChildren(['batchNumber', 'productionDate', 'status', 'createdAt', 'updatedAt'])"
+        }
+      }
+    },
+    "quality": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      "tests": {
+        "$testId": {
+          ".validate": "newData.hasChildren(['name', 'type', 'status', 'date', 'createdAt', 'updatedAt'])"
+        }
+      },
+      "samples": {
+        "$sampleId": {
+          ".validate": "newData.hasChildren(['batchNumber', 'status', 'collectionDate', 'createdAt', 'updatedAt'])"
+        }
+      }
+    },
+    "sales": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      "transactions": {
+        "$transactionId": {
+          ".validate": "newData.hasChildren(['orderId', 'date', 'total', 'status', 'createdAt', 'updatedAt'])",
+          "total": {
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          }
+        }
+      }
+    },
+    "$other": {
+      ".validate": false
+    }
+  }
+}
